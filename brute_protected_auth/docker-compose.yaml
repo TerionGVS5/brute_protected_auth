@@ -1,0 +1,37 @@
+version: '3.4'
+services:
+  database:
+    ports:
+      - "5435:5432"
+    build:
+      context: .
+      dockerfile: ./DockerfileDB
+
+  redis:
+    image: redis:alpine
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6375:6379"
+
+  server:
+    build:
+      context: .
+      network: host
+    ports:
+      - "8055:80"
+    depends_on:
+      - database
+      - redis
+    links:
+      - database
+      - redis
+    volumes:
+      - ./:/srv/server
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+
+
+
+

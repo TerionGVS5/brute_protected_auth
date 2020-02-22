@@ -1,0 +1,33 @@
+version: '3.4'
+services:
+  database_test:
+    image: postgres:11
+    expose:
+      - "5432"
+
+  redis_test:
+    image: redis:alpine
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    expose:
+      - "6379"
+
+  server_test:
+    build:
+      context: .
+    command: python manage.py test
+    depends_on:
+      - database_test
+      - redis_test
+    links:
+      - database_test
+      - redis_test
+    volumes:
+      - ./:/srv/server
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+
+
+
+
